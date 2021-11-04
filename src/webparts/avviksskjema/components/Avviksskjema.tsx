@@ -75,7 +75,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
       },
       formatDate: (date?: Date) => date && date.toLocaleDateString(),
       firstDayOfWeek: DayOfWeek.Monday,
-      disabled: this.state.category === '',
+      ...disabledIfCategoryIsEmpty,
     } as IDatePickerProps;
 
     const dateTimeLocalizationProps: IDateTimePickerProps = {
