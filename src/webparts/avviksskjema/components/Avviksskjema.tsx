@@ -117,7 +117,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
     ];
   
     const relationsForPeopleInvolvedOptions: IChoiceGroupOption[] = [
-      { key: 'Ansatt / Innleid', text: 'Ansatt / Innleid' },
+      { key: 'Ansatt/Innleid', text: 'Ansatt/Innleid' },
       { key: 'NAV-bruker', text: 'NAV-bruker' },
       { key: 'Annet', text: 'Annet'},
     ];
