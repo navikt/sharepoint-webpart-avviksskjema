@@ -40,21 +40,25 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
   }
  
   public render(): React.ReactElement<IAvviksskjemaProps> {
-            
+    
+    const disabledIfCategoryIsEmpty = {
+      disabled: this.state.category === '',
+    };
+
     const shortTextFieldProps = {
       onGetErrorMessage: (value: string): string => this._getErrorMessageTextLength(value, 200),
-      disabled: this.state.category === '',
+      ...disabledIfCategoryIsEmpty,
     };
 
     const longTextFieldProps = {
       multiline: true,
       autoAdjustHeight: true,
       onGetErrorMessage: (value: string): string => this._getErrorMessageTextLength(value, 32768),
-      disabled: this.state.category === '',
+      ...disabledIfCategoryIsEmpty,
     };
 
     const choiceGroupProps = {
-      disabled: this.state.category === '',
+      ...disabledIfCategoryIsEmpty,
     };
 
     const dateLocalizationProps: IDatePickerProps = {
