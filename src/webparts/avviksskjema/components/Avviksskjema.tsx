@@ -10,8 +10,11 @@ import {
   IChoiceGroupOption,
   IComboBoxOption,
   IDatePickerProps,
+  MessageBar,
+  MessageBarType,
   PrimaryButton,
   SelectableOptionMenuItemType,
+  Spinner,
   Stack,
   TextField
 } from '@fluentui/react';
@@ -23,9 +26,15 @@ import {
   MinutesIncrement,
   IDateTimePickerProps,
 } from '@pnp/spfx-controls-react';
+import { HttpClient, IHttpClientOptions, HttpClientResponse } from '@microsoft/sp-http'; 
 
 const PnpStorage = new PnPClientStorage();
 const PnpStorageKey = 'Avviksskjema';
+
+export interface ISalesforceErrorRespone {
+  errorCode: string;
+  message: string;
+}
 
 export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IAvviksskjemaState> {
 
@@ -38,7 +47,13 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
   public componentDidUpdate() {
     this._saveState();
   }
- 
+  
+  public async componentDidCatch(error, info) {
+    this.setState({hasError: true, sending: false});
+    console.error(error);
+    console.info(info);
+  }
+  
   public render(): React.ReactElement<IAvviksskjemaProps> {
     
     const disabledIfCategoryIsEmpty = {
@@ -132,8 +147,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
       { key: 'Vet ikke', text: 'Vet ikke'},
     ];
       
-    return (<>
-      <ComboBox 
+    return (<form onSubmit={this.sendForm} >
         label='Hvilken kategori gjelder avviket?'
         options={categoryOptions}
         selectedKey={this.state.category}
@@ -301,25 +315,52 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           onChange={(_, val) => this.setState({suggestedResolution: val})}
           {...longTextFieldProps}
         />
-      </>}
-      <br />
-      <Stack horizontal tokens={{ childrenGap: 10 }}>
-        <PrimaryButton 
-          text='Send (ikke implementert ennå)'
-          disabled
-        />
-        <DefaultButton
-          text='Slett skjemadata fra nettleseren'
-          onClick={this._deleteState}
-        />
+        </>}
+        <Stack horizontal tokens={{ childrenGap: 10 }}>
+          <PrimaryButton 
+            text='Send'
+            type='submit'
+          />
+          {this.state.sending && <Spinner label='Sender…' ariaLive="assertive" labelPosition="right" />}
+        </Stack>
+        {this.state.hasError && <>
+        <MessageBar
+          messageBarType={MessageBarType.error}
+          onDismiss={()=>this.setState({hasError: false})}
+          isMultiline={true}
+        >
+          {this.state.errorMessage && <>
+            Det skjedde en feil i innsendingen. <br />
+            <br />
+            {this.state.errorCode && <><strong>Feilkode:</strong> {this.state.errorCode}<br /></>}
+            <strong>Feilmelding:</strong> {this.state.errorMessage}
+          </>}
+          {this.state.hasError && !this.state.errorMessage && <>
+            Klarte ikke å få kontakt med SalesForce. Se nettleserkonsollen for detaljer.
+          </>}
+        </MessageBar>
+        </>}
+        {this.state.responseID && <>
+        <MessageBar
+          messageBarType={MessageBarType.success}
+          onDismiss={()=>this.setState({responseID: undefined})}
+        >
+          Vellykket innsending. <strong>Saksnummer:</strong> {this.state.responseID}.
+        </MessageBar>
+        </>}
+        <Stack tokens={{ childrenGap: 10 }}>
+          <TextField
+            label='Skjemadata'
+            value={JSON.stringify({...this._getFormFields(), reporterID: this.props.context.pageContext.user.loginName}, undefined, 2)}
+            readOnly multiline autoAdjustHeight
+          />
+          <DefaultButton
+            text='Slett skjemadata fra nettleseren'
+            onClick={this._deleteState}
+          />
+        </Stack>
       </Stack>
-      <br />
-      <TextField
-        label='Skjemadata'
-        value={JSON.stringify({...this.state, reporterID: this.props.user.loginName}, undefined, 2)}
-        readOnly multiline autoAdjustHeight
-      />
-    </>);
+    </form>);
   }
 
   private _getErrorMessageTextLength = (value: string, limit: number): string => {
@@ -328,7 +369,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
 
   private _loadState = async () => {
     await PnpStorage.session.deleteExpired();
-    const storedState = PnpStorage.session.get(PnpStorageKey);
+    const storedState = await PnpStorage.session.get(PnpStorageKey);
     storedState.incidentDate = storedState.incidentDate && new Date(storedState.incidentDate);
     storedState.incidentToDate = storedState.incidentToDate && new Date(storedState.incidentToDate);
     storedState.incidentFoundDateTime = storedState.incidentFoundDateTime && new Date(storedState.incidentFoundDateTime);
@@ -336,12 +377,57 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
   }
 
   private _saveState = () => {
-    PnpStorage.session.put(PnpStorageKey, this.state, dateAdd(new Date(), 'day', 1));
+    PnpStorage.session.put(PnpStorageKey, this._getFormFields(), dateAdd(new Date(), 'day', 1));
   }
 
   private _deleteState = () => {
     PnpStorage.session.delete(PnpStorageKey);
     this.setState(DefatultState);
+  }
+
+  protected sendForm = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!this.props.salesforceUrl || !this.props.salesforceToken) {
+      this.setState({
+        hasError: true,
+        errorMessage: 'Mangler url eller token til Salesforce-API. Dette må legges inn i nettdelens innstillinger.',
+      });
+      return;
+    }
+    this.setState({sending: true});
+    const body = JSON.stringify(this._getFormFields());
+    const headers: Headers = new Headers({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${this.props.salesforceToken.trim()}`,
+      'x-prettyprint': '1',
+    });
+    const httpClientOptions: IHttpClientOptions = {body, headers};
+    const response: HttpClientResponse = await this.props.context.httpClient.post(
+      this.props.salesforceUrl.trim(),
+      HttpClient.configurations.v1,
+      httpClientOptions,
+    );
+    const json: string | ISalesforceErrorRespone[] = await response.json();
+    if (typeof json === "string") {
+      // success!
+      this.setState({hasError: false, responseID: json});
+    } else {
+      // error
+      this.setState({hasError: true, errorCode: json[0].errorCode, errorMessage: json[0].message});
+    }
+    this.setState({sending: false});
+  }
+
+  private _getFormFields = () => {
+    const state = {...this.state}; // clone
+    [
+      'hasError',
+      'responseID',
+      'errorCode',
+      'errorMessage',
+      'sending',
+    ].forEach(k => delete state[k]);
+    return state;
   }
 
 }

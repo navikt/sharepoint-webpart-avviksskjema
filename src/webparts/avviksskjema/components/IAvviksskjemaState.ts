@@ -25,10 +25,17 @@ export interface IAvviksskjemaState {
   involved: string;
   missingPolicy: string;
   resultNeeds: string;
-  suggestedResolution: string;  
+  suggestedResolution: string;
+
+  // non-form fields
+  responseID?: string;
+  hasError: boolean;
+  errorMessage?: string;
+  errorCode?: string;
+  sending: boolean;
 }
 
-export const DefatultState = {
+export const DefatultState: IAvviksskjemaState = {
   category: '',
   incidentDate: undefined,
   incidentLocation: '',
@@ -49,4 +56,9 @@ export const DefatultState = {
   missingPolicy: '',
   resultNeeds: '',
   suggestedResolution: '',
+  responseID: undefined,
+  hasError: false,
+  errorCode: undefined,
+  errorMessage: undefined,
+  sending: false,
 };

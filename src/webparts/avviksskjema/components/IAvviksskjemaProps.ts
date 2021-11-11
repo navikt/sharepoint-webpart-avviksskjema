@@ -1,5 +1,7 @@
-import {SPUser} from '@microsoft/sp-page-context';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 export interface IAvviksskjemaProps {
-  user: SPUser;
+  context: WebPartContext;
+  salesforceUrl: string;
+  salesforceToken: string;
 }

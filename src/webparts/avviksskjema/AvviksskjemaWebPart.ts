@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
-import { IPropertyPaneConfiguration } from '@microsoft/sp-property-pane';
+import { IPropertyPaneConfiguration, PropertyPaneTextField } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'AvviksskjemaWebPartStrings';
@@ -10,7 +10,8 @@ import { IAvviksskjemaProps } from './components/IAvviksskjemaProps';
 import { sp } from '@pnp/sp';
 
 export interface IAvviksskjemaWebPartProps {
-  description: string;
+  salesforceUrl: string;
+  salesforceToken: string;
 }
 
 export default class AvviksskjemaWebPart extends BaseClientSideWebPart<IAvviksskjemaWebPartProps> {
@@ -24,7 +25,9 @@ export default class AvviksskjemaWebPart extends BaseClientSideWebPart<IAvvikssk
     const element: React.ReactElement<IAvviksskjemaProps> = React.createElement(
       Avviksskjema,
       {
-        user: this.context.pageContext.user
+        context: this.context,
+        salesforceUrl: this.properties.salesforceUrl,
+        salesforceToken: this.properties.salesforceToken,
       }
     );
 
@@ -44,12 +47,19 @@ export default class AvviksskjemaWebPart extends BaseClientSideWebPart<IAvvikssk
       pages: [
         {
           header: {
-            description: strings.PropertyPaneDescription
+            description: 'Nettdel for innsending av avviksskjemaer til Salesforce.'
           },
           groups: [
             {
-              groupName: strings.BasicGroupName,
-              groupFields: []
+              groupName: 'Tilkobling til Salesforce',
+              groupFields: [
+                PropertyPaneTextField('salesforceUrl', {
+                  label: 'URL til endepunkt i Salesforce',
+                }),
+                PropertyPaneTextField('salesforceToken', {
+                  label: 'Token (uten `Bearer`)'
+                }),
+              ]
             }
           ]
         }
