@@ -148,56 +148,58 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
     ];
       
     return (<form onSubmit={this.sendForm} >
-        label='Hvilken kategori gjelder avviket?'
-        options={categoryOptions}
-        selectedKey={this.state.category}
-        onChange={(_, opt) => this.setState({category: opt.key as string})}
-      />
-      <DatePicker 
-        label='Når skjedde/startet hendelsen?'
-        onSelectDate={val => this.setState({incidentDate: val})}
-        value={this.state.incidentDate}
-        {...dateLocalizationProps}
-      />
-      <TextField 
-        label='Hvor skjedde hendelsen?'
-        description='Enhet / Geografisk lokasjon'
-        value={this.state.incidentLocation}
-        onChange={(_, val) => this.setState({incidentLocation: val})}
-        {...shortTextFieldProps}
-      />
-      <TextField 
-        label='Beskriv hendelsen'
-        value={this.state.incidentDescription}
-        onChange={(_, val) => this.setState({incidentDescription: val})}
-        {...longTextFieldProps}
-      />
-      <TextField
-        label='Hvilke konsekvenser hadde hendelsen?'
-        value={this.state.incidentConsecquences}
-        onChange={(_, val) => this.setState({incidentConsecquences: val})}
-        {...longTextFieldProps}
-      />
-      <TextField
-        label='Hva er årsaken til hendelsen?'
-        value={this.state.incidentCause}
-        onChange={(_, val) => this.setState({incidentCause: val})}
-        {...longTextFieldProps}
-      />
-      <TextField
-        label='Forslag til tiltak:'
-        value={this.state.suggestedActions}
-        onChange={(_, val) => this.setState({suggestedActions: val})}
-        {...longTextFieldProps}
-      />
-      <ChoiceGroup 
-        label='Alvorlighetsgrad'
-        options={priorityOptions}
-        selectedKey={this.state.priority}
-        onChange={(_, val) => this.setState({priority: val.key})}
-        {...choiceGroupProps}
-      />
-      {this.state.category === categoryOptions[1].key && <>
+      <Stack tokens={{ childrenGap: 20}}>
+        <ComboBox 
+          label='Hvilken kategori gjelder avviket?'
+          options={categoryOptions}
+          selectedKey={this.state.category}
+          onChange={(_, opt) => this.setState({category: opt.key as string})}
+        />
+        <DatePicker 
+          label='Når skjedde/startet hendelsen?'
+          onSelectDate={val => this.setState({incidentDate: val})}
+          value={this.state.incidentDate}
+          {...dateLocalizationProps}
+        />
+        <TextField 
+          label='Hvor skjedde hendelsen?'
+          description='Enhet / Geografisk lokasjon'
+          value={this.state.incidentLocation}
+          onChange={(_, val) => this.setState({incidentLocation: val})}
+          {...shortTextFieldProps}
+        />
+        <TextField 
+          label='Beskriv hendelsen'
+          value={this.state.incidentDescription}
+          onChange={(_, val) => this.setState({incidentDescription: val})}
+          {...longTextFieldProps}
+        />
+        <TextField
+          label='Hvilke konsekvenser hadde hendelsen?'
+          value={this.state.incidentConsecquences}
+          onChange={(_, val) => this.setState({incidentConsecquences: val})}
+          {...longTextFieldProps}
+        />
+        <TextField
+          label='Hva er årsaken til hendelsen?'
+          value={this.state.incidentCause}
+          onChange={(_, val) => this.setState({incidentCause: val})}
+          {...longTextFieldProps}
+        />
+        <TextField
+          label='Forslag til tiltak:'
+          value={this.state.suggestedActions}
+          onChange={(_, val) => this.setState({suggestedActions: val})}
+          {...longTextFieldProps}
+        />
+        <ChoiceGroup 
+          label='Alvorlighetsgrad'
+          options={priorityOptions}
+          selectedKey={this.state.priority}
+          onChange={(_, val) => this.setState({priority: val.key})}
+          {...choiceGroupProps}
+        />
+        {this.state.category === categoryOptions[1].key && <>
         <TextField
           label='Hvem er de berørte?'
           description='Oppgi navn og personnummer. Ett per linje.'
@@ -241,8 +243,8 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
             {...shortTextFieldProps}
           />
         </>}
-      </>}
-      {this.state.category === categoryOptions[2].key && <>
+        </>}
+        {this.state.category === categoryOptions[2].key && <>
         <ChoiceGroup
           label='Er hendelsen relatert til sikkerhetsloven?'
           options={isRelatedToSecurityLawOptions}
@@ -262,8 +264,8 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           onChange={(_, val) => this.setState({involvedUnit: val})}
           {...shortTextFieldProps}
         />
-      </>}
-      {this.state.category === categoryOptions[3].key && <>
+        </>}
+        {this.state.category === categoryOptions[3].key && <>
         <TextField
           label='Hvem eller hva er berørt?'
           description='Enhet, system eller enkeltperson'
@@ -289,8 +291,8 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           onChange={(_, val) => this.setState({suggestedResolution: val})}
           {...longTextFieldProps}
         />
-      </>}
-      {this.state.category === categoryOptions[4].key && <>
+        </>}
+        {this.state.category === categoryOptions[4].key && <>
         <TextField
           label='Hvem eller hva er berørt? (Enhet, system eller enkeltperson)'
           value={this.state.involved}
