@@ -147,7 +147,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
       { key: 'Vet ikke', text: 'Vet ikke'},
     ];
       
-    return (<form onSubmit={this.sendForm} >
+    return (<form onSubmit={this.sendForm}>
       <Stack tokens={{ childrenGap: 20}}>
         <ComboBox 
           label='Hvilken kategori gjelder avviket?'
@@ -404,32 +404,41 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
       'x-prettyprint': '1',
     });
     const httpClientOptions: IHttpClientOptions = {body, headers};
-    const response: HttpClientResponse = await this.props.context.httpClient.post(
-      this.props.salesforceUrl.trim(),
-      HttpClient.configurations.v1,
-      httpClientOptions,
-    );
-    const json: string | ISalesforceErrorRespone[] = await response.json();
-    if (typeof json === "string") {
-      // success!
-      this.setState({hasError: false, responseID: json});
-    } else {
-      // error
-      this.setState({hasError: true, errorCode: json[0].errorCode, errorMessage: json[0].message});
+    try {
+      const response: HttpClientResponse = await this.props.context.httpClient.post(
+        this.props.salesforceUrl.trim(),
+        HttpClient.configurations.v1,
+        httpClientOptions,
+      );
+      const json: string | ISalesforceErrorRespone[] = await response.json();
+      if (typeof json === "string") {
+        // success!
+        this.setState({hasError: false, responseID: json});
+      } else {
+        // error
+        this.setState({hasError: true, errorCode: json[0].errorCode, errorMessage: json[0].message});
+      }
+    } catch (e) {
+      this.setState({
+        hasError: true,
+        errorMessage: `${e}. Sjekk nettleserkonsollen for mer informasjon.`,
+      });
+      console.error(e);
+    } finally {
+      this.setState({sending: false});
     }
-    this.setState({sending: false});
   }
 
   private _getFormFields = () => {
-    const state = {...this.state}; // clone
+    const fields = {...this.state}; // clone
     [
       'hasError',
       'responseID',
       'errorCode',
       'errorMessage',
       'sending',
-    ].forEach(k => delete state[k]);
-    return state;
+    ].forEach(k => delete fields[k]);
+    return fields;
   }
 
 }
