@@ -5,18 +5,15 @@ import * as strings from 'AvviksskjemaWebPartStrings';
 import {
   Checkbox,
   ChoiceGroup,
-  ComboBox,
   DatePicker,
   DayOfWeek,
   DefaultButton,
   IChoiceGroupOption,
-  IComboBoxOption,
   IDatePickerProps,
   IDatePickerStrings,
   MessageBar,
   MessageBarType,
   PrimaryButton,
-  SelectableOptionMenuItemType,
   Spinner,
   Stack,
   TextField
@@ -85,27 +82,31 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
       minutesIncrementStep: 10 as MinutesIncrement,
     };
 
-    const categoryOptions: IChoiceGroupOption[] = [
-      { key: strings.IncidentCategoryPrivacy, text: strings.IncidentCategoryPrivacy },
-      { key: strings.IncidentCategorySecurity, text: strings.IncidentCategorySecurity },
-      { key: strings.IncidentCategoryHSE, text: strings.IncidentCategoryHSE },
-      { key: strings.IncidentCategoryOther, text: strings.IncidentCategoryOther },
-    ];
+    const options = (labels: string[]): IChoiceGroupOption[] => {
+      return labels.map(label => ({ key: label, text: label }));
+    };
+
+    const categoryOptions: IChoiceGroupOption[] = options([
+      strings.IncidentCategoryPrivacy,
+      strings.IncidentCategorySecurity,
+      strings.IncidentCategoryHSE,
+      strings.IncidentCategoryOther,
+    ]);
   
-    const incidentMainCauseOptions: IChoiceGroupOption[] = [
-      { key: 'Brudd på rutiner', text: 'Brudd på rutiner' },
-      { key: 'Manglende rutiner', text: 'Manglende rutiner' },
-      { key: 'Menneskelig svikt', text: 'Menneskelig svikt'},
-      { key: 'Teknisk svikt', text: 'Teknisk svikt'},
-      { key: 'Annet', text: 'Annet'},
-    ];
+    const incidentMainCauseOptions: IChoiceGroupOption[] = options([
+      'Brudd på rutiner',
+      'Manglende rutiner',
+      'Menneskelig svikt',
+      'Teknisk svikt',
+      'Annet',
+    ]);
   
-    const relationsForPeopleInvolvedOptions: IChoiceGroupOption[] = [
-      { key: 'Ansatt/Innleid', text: 'Ansatt/Innleid' },
-      { key: 'NAV-bruker', text: 'NAV-bruker' },
-      { key: 'Annet', text: 'Annet'},
-    ];
-  
+    const relationsForPeopleInvolvedOptions: IChoiceGroupOption[] = options([
+      'Ansatt/Innleid',
+      'NAV-bruker',
+      'Annet',
+    ]);
+
     return (<form onSubmit={this.sendForm}>
       <Stack tokens={{ childrenGap: 20}}>
         <TextField 
@@ -271,18 +272,6 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
     storedState.incidentDate = storedState.incidentDate && new Date(storedState.incidentDate);
     storedState.incidentToDate = storedState.incidentToDate && new Date(storedState.incidentToDate);
     storedState.incidentFoundDateTime = storedState.incidentFoundDateTime && new Date(storedState.incidentFoundDateTime);
-    if ([
-      strings.ManglendeBehandlingsgrunnlag as string,
-      strings.ManglendeIvaretagelseAvInnsynsretten as string,
-      strings.ManglerDatabehandleravtale as string,
-      strings.UgyldigSamtykke as string,
-      strings.IkkeFastsattLagringstider as string,
-      strings.BehandlingenIkkeRegistrertIBehandlingskatalogen as string,
-      strings.IkkeGjennomførtPVK as string,
-    ].includes(storedState.category)) {
-      storedState.personvernCategory = storedState.category;
-      storedState.category = strings.AnnetPersonvernrelatert;
-    }
     this.setState(storedState);
   }
 
@@ -339,9 +328,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
 
   private _getFormFields = () => {
     const fields = {...this.state}; // clone
-    if (fields.category === strings.AnnetPersonvernrelatert && fields.personvernCategory) fields.category = fields.personvernCategory;
     [
-      'personvernCategory',
       'hasError',
       'responseID',
       'errorCode',

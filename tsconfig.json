@@ -26,7 +26,6 @@
       "DOM",
       "ES2015.collection",
       "ES2015.promise",
-      "ES2016.Array.Include",
     ]
   },
   "include": [
