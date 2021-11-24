@@ -7,7 +7,9 @@ export interface IAvviksskjemaState {
   incidentConsecquences: string; // 32768 characters
   incidentCause: string; // 32768 characters
   suggestedActions: string; // 32768 characters
-  priority: string;
+
+  personalInfoLost: boolean;
+  categoryOther: string;
 
   // personopplysninger på avveie
   peopleInvolved: string; // 32768 characters
@@ -17,17 +19,8 @@ export interface IAvviksskjemaState {
   relationsForPeopleInvolved: string; // choice
   relationsForPeopleInvolvedOther: string;
 
-  // brudd på policy
-  isRelatedToSecurityLaw: string;
-  involvedUnit: string;
-
-  // mangel på policy/security exception
-  involved: string;
-  missingPolicy: string;
-  resultNeeds: string;
-  suggestedResolution: string;
-
-  // non-form fields
+  // non-salesforce fields
+  personvernCategory: string;
   responseID?: string;
   hasError: boolean;
   errorMessage?: string;
@@ -37,28 +30,24 @@ export interface IAvviksskjemaState {
 
 export const DefatultState: IAvviksskjemaState = {
   category: '',
+  categoryOther: '',
   incidentDate: undefined,
   incidentLocation: '',
   incidentDescription: '',
   incidentConsecquences: '',
   incidentCause: '',
   suggestedActions: '',
-  priority: '',
   peopleInvolved: '',
   incidentToDate: undefined,
   incidentFoundDateTime: undefined,
   incidentMainCause: '',
   relationsForPeopleInvolved: '',
   relationsForPeopleInvolvedOther: '',
-  isRelatedToSecurityLaw: '',
-  involvedUnit: '',
-  involved: '',
-  missingPolicy: '',
-  resultNeeds: '',
-  suggestedResolution: '',
+  personvernCategory: '',
   responseID: undefined,
   hasError: false,
   errorCode: undefined,
   errorMessage: undefined,
   sending: false,
+  personalInfoLost: false,
 };
