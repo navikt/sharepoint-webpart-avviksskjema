@@ -9,8 +9,12 @@ import {
   DayOfWeek,
   DefaultButton,
   IChoiceGroupOption,
+  IChoiceGroupProps,
   IDatePickerProps,
   IDatePickerStrings,
+  ITextFieldProps,
+  ITextFieldStyleProps,
+  ITextFieldStyles,
   MessageBar,
   MessageBarType,
   PrimaryButton,
@@ -57,23 +61,41 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
   
   public render(): React.ReactElement<IAvviksskjemaProps> {
     
-    const shortTextFieldProps = {
-      onGetErrorMessage: (value: string): string => this._getErrorMessageTextLength(value, 200),
+    const getTextFieldStyles = (props: ITextFieldStyleProps): Partial<ITextFieldStyles> => {
+      const {required} = props;
+      return {
+        fieldGroup: [],
+        subComponentStyles: {
+          label: {
+            root: {
+              // fontSize: '16px'
+            }
+          },
+        }
+      };
     };
 
-    const longTextFieldProps = {
+    const shortTextFieldProps: ITextFieldProps = {
+      onGetErrorMessage: (value: string): string => this._getErrorMessageTextLength(value, 200),
+      styles: getTextFieldStyles,
+    };
+
+    const longTextFieldProps: ITextFieldProps = {
       multiline: true,
       autoAdjustHeight: true,
-      onGetErrorMessage: (value: string): string => this._getErrorMessageTextLength(value, 32768),
+      // onGetErrorMessage: (value: string): string => this._getErrorMessageTextLength(value, 32768),
+      styles: getTextFieldStyles,
     };
 
-    const choiceGroupProps = {
+    const choiceGroupProps: IChoiceGroupProps = {
+      styles: getTextFieldStyles,
     };
 
     const dateLocalizationProps: IDatePickerProps = {
       strings: strings.DateStrings as unknown as IDatePickerStrings,
       formatDate: (date?: Date) => date && date.toLocaleDateString(),
       firstDayOfWeek: DayOfWeek.Monday,
+      styles: getTextFieldStyles,
     } as IDatePickerProps;
 
     const dateTimeLocalizationProps: IDateTimePickerProps = {
