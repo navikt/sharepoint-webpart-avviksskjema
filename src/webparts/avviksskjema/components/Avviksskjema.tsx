@@ -16,7 +16,8 @@ import {
   PrimaryButton,
   Spinner,
   Stack,
-  TextField
+  TextField,
+  Toggle
 } from '@fluentui/react';
 import { dateAdd, PnPClientStorage } from '@pnp/common';
 import {
@@ -247,6 +248,11 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           Vellykket innsending. <strong>Saksnummer:</strong> {this.state.responseID}.
         </MessageBar>
         </>}
+        <Toggle
+          label='Feilsøk'
+          onChange={(ev, checked) => this.setState({debug: checked})}
+        />
+        { this.state.debug && <>
         <Stack tokens={{ childrenGap: 10 }}>
           <TextField
             label='Skjemadata'
@@ -255,9 +261,10 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           />
           <DefaultButton
             text='Slett skjemadata fra nettleseren'
-            onClick={this._deleteState}
+            onClick={this._resetState}
           />
         </Stack>
+        </>}
       </Stack>
     </form>);
   }
@@ -279,7 +286,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
     PnpStorage.session.put(PnpStorageKey, this._getFormFields(), dateAdd(new Date(), 'day', 1));
   }
 
-  private _deleteState = () => {
+  private _resetState = () => {
     PnpStorage.session.delete(PnpStorageKey);
     this.setState(DefatultState);
   }
@@ -334,6 +341,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
       'errorCode',
       'errorMessage',
       'sending',
+      'debug',
     ].forEach(k => delete fields[k]);
     return fields;
   }

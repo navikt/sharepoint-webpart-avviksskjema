@@ -26,6 +26,7 @@ export interface IAvviksskjemaState {
   errorMessage?: string;
   errorCode?: string;
   sending: boolean;
+  debug: boolean;
 }
 
 export const DefatultState: IAvviksskjemaState = {
@@ -50,4 +51,5 @@ export const DefatultState: IAvviksskjemaState = {
   errorMessage: undefined,
   sending: false,
   personalInfoLost: false,
+  debug: false,
 };
