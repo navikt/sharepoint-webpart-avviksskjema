@@ -133,10 +133,14 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
     return (<form onSubmit={this.sendForm}>
       <Stack tokens={{ childrenGap: 20}}>
         <TextField 
-          label='Beskriv hendelsen / hva har skjedd?'
+          label='Hva har skjedd? Beskriv hendelsen.'
           value={this.state.incidentDescription}
           onChange={(_, val) => this.setState({incidentDescription: val})}
           {...longTextFieldProps}
+          required
+          onGetErrorMessage={(value: string): string => value ? '' : 'Du må fylle ut dette feltet.'}
+          validateOnLoad={false}
+          validateOnFocusOut
         />
         <TextField
           label='Hvilke konsekvenser hadde hendelsen?'
@@ -157,23 +161,26 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           {...longTextFieldProps}
         />
         <Stack>
-        <h2>Tilleggsopplysninger</h2>
-        <p>For å kunne behandle din innsending på riktig måte, trenger vi noe mer informasjon. Hvis du er usikker på hva du skal skrive, kan du la være å fylle inn de feltene.</p>
+          <h2>Tilleggsopplysninger</h2>
+          <p>For å kunne behandle din innsending på riktig måte, trenger vi noe mer informasjon. Hvis du er usikker på hva du skal skrive, kan du la være å fylle inn de feltene.</p>
         </Stack>
-        <ChoiceGroup 
-          label='Hva gjelder avviket?'
-          options={categoryOptions}
-          selectedKey={this.state.category}
-          onChange={(_, opt) => this.setState({category: opt.key as string})}
-        />
-        { this.state.category === strings.IncidentCategoryOther &&
+        <Stack>
+          <ChoiceGroup 
+            label='Hva gjelder hendelsen?'
+            options={categoryOptions}
+            selectedKey={this.state.category}
+            onChange={(_, opt) => this.setState({category: opt.key as string})}
+            required
+            />
           <TextField
             label='Du valgte «annet». Vennligst spesifiser:'
             value={this.state.categoryOther}
             onChange={(_, val) => this.setState({categoryOther: val})}
+            disabled={this.state.category !== strings.IncidentCategoryOther}
             {...shortTextFieldProps}
+            required={this.state.category === strings.IncidentCategoryOther}
           />
-        }
+        </Stack>
         <DatePicker 
           label='Når skjedde/startet hendelsen?'
           onSelectDate={val => this.setState({incidentDate: val})}
@@ -201,7 +208,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
               {...dateLocalizationProps}
               />
             <DateTimePicker 
-              label='Når ble avviket oppdaget?'
+              label='Når ble hendelsen oppdaget?'
               value={this.state.incidentFoundDateTime}
               onChange={val => this.setState({incidentFoundDateTime: val})}
               {...dateTimeLocalizationProps}
@@ -221,7 +228,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
               {...choiceGroupProps}
             />
             <ChoiceGroup 
-              label='Hvilken relasjon har virksomheten til de personene som er berørt av avviket?'
+              label='Hvilken relasjon har virksomheten til de personene som er berørt av hendelsen?'
               options={relationsForPeopleInvolvedOptions}
               selectedKey={this.state.relationsForPeopleInvolved}
               onChange={(_, val) => this.setState({relationsForPeopleInvolved: val.key})}
@@ -240,7 +247,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
         </>}
         <Stack horizontal tokens={{ childrenGap: 10 }}>
           <PrimaryButton 
-            text='Send'
+            text='Send inn skjema'
             type='submit'
           />
           {this.state.sending && <Spinner label='Sender…' ariaLive="assertive" labelPosition="right" />}
