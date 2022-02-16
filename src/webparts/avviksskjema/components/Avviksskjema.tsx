@@ -322,10 +322,10 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
 
   protected sendForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!this.props.salesforceUrl || !this.props.salesforceToken) {
+    if (!this.props.azureFunctionUrl || !this.props.azureFunctionCode) {
       this.setState({
         hasError: true,
-        errorMessage: 'Mangler url eller token til Salesforce-API. Dette må legges inn i nettdelens innstillinger.',
+        errorMessage: 'Mangler url eller token til Azure-API. Dette må legges inn i nettdelens innstillinger.',
       });
       return;
     }
@@ -333,13 +333,12 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
     const body = JSON.stringify(this._getFormFields());
     const headers: Headers = new Headers({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.props.salesforceToken.trim()}`,
-      'x-prettyprint': '1',
+      'X-Functions-Key': this.props.azureFunctionCode.trim(),
     });
-    const httpClientOptions: IHttpClientOptions = {body, headers};
+    const httpClientOptions: IHttpClientOptions = {body, headers, };
     try {
       const response: HttpClientResponse = await this.props.context.httpClient.post(
-        this.props.salesforceUrl.trim(),
+        this.props.azureFunctionUrl.trim(),
         HttpClient.configurations.v1,
         httpClientOptions,
       );

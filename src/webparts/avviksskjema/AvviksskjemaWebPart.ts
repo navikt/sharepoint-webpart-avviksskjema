@@ -11,14 +11,8 @@ import { sp } from '@pnp/sp';
 import { HttpClient, IHttpClientOptions, HttpClientResponse } from '@microsoft/sp-http'; 
 
 export interface IAvviksskjemaWebPartProps {
-  salesforceUrl: string;
-  salesforceToken: string;
-  accessTokenUrl: string;
-  accessTokenUserName: string;
-  accessTokenPassword: string;
-  accessTokenClientID: string;
-  accessTokenSecret: string;
-  accessToken: string;
+  azureFunctionUrl: string;
+  azureFunctionCode: string;
 }
 
 export default class AvviksskjemaWebPart extends BaseClientSideWebPart<IAvviksskjemaWebPartProps> {
@@ -33,8 +27,8 @@ export default class AvviksskjemaWebPart extends BaseClientSideWebPart<IAvvikssk
       Avviksskjema,
       {
         context: this.context,
-        salesforceUrl: this.properties.salesforceUrl,
-        salesforceToken: this.properties.salesforceToken,
+        azureFunctionUrl: this.properties.azureFunctionUrl,
+        azureFunctionCode: this.properties.azureFunctionCode,
       }
     );
 
@@ -60,68 +54,18 @@ export default class AvviksskjemaWebPart extends BaseClientSideWebPart<IAvvikssk
             {
               groupName: 'Tilkobling til Salesforce',
               groupFields: [
-                PropertyPaneTextField('salesforceUrl', {
-                  label: 'URL til endepunkt i Salesforce',
+                PropertyPaneTextField('azureFunctionUrl', {
+                  label: 'URL til Azure function',
                 }),
-                PropertyPaneTextField('salesforceToken', {
-                  label: 'Token (uten `Bearer`)',
+                PropertyPaneTextField('azureFunctionCode', {
+                  label: 'API-nøkkel',
                 }),
               ]
             },
-            {
-              groupName: 'Oppdater token',
-              groupFields: [
-                PropertyPaneTextField('accessTokenUrl', {
-                  label: 'Access token URL',
-                }),
-                PropertyPaneTextField('accessTokenUserName', {
-                  label: 'Brukernavn',
-                }),
-                PropertyPaneTextField('accessTokenPassword', {
-                  label: 'Passord',
-                }),
-                PropertyPaneTextField('accessTokenClientID', {
-                  label: 'Client ID',
-                }),
-                PropertyPaneTextField('accessTokenSecret', {
-                  label: 'Secret',
-                }),
-                PropertyPaneButton('accessToken', {
-                  text: 'Get token',
-                  onClick: this.getToken,
-                }),
-              ]
-            }
           ]
         }
       ]
     };
-  }
-
-  protected getToken = async (event: React.FormEvent<HTMLFormElement>) => {
-    const body = JSON.stringify({
-      'grant_type': 'password',
-      'client_id': this.properties.accessTokenClientID,
-      'client_secret': this.properties.accessTokenSecret,
-      'username': this.properties.accessTokenUserName,
-      'password': this.properties.accessTokenPassword,
-    });
-    const headers: Headers = new Headers({
-      'X-PrettyPrint': '1',
-    });
-    const httpClientOptions: IHttpClientOptions = {body, headers};
-    try {
-      const response: HttpClientResponse = await this.context.httpClient.post(
-        this.properties.accessTokenUrl,
-        HttpClient.configurations.v1,
-        httpClientOptions,
-      );
-      await response.json();
-      console.log(response);
-    } catch (e) {
-      console.error(e);
-    } finally {
-    }
   }
 
 }
