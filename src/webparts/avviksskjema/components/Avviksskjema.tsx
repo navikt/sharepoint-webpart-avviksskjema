@@ -125,7 +125,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
     ]);
   
     const relationsForPeopleInvolvedOptions: IChoiceGroupOption[] = options([
-      'Ansatt/Innleid',
+      'Ansatt/innleid',
       'NAV-bruker',
       'Annet',
     ]);
@@ -201,17 +201,17 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           </Stack>
           { this.state.personalInfoLost && <>
             <p>Når personopplysninger er på avveie, trenger vi ekstra informasjon som skal rapporteres til Datatilsynet. Fyll inn så godt du kan.</p>
-            <DatePicker 
-              label='Hvor lenge varte hendelsen?'
-              value={this.state.incidentToDate}
-              onSelectDate={val => this.setState({incidentToDate: val})}
-              {...dateLocalizationProps}
-              />
             <DateTimePicker 
               label='Når ble hendelsen oppdaget?'
               value={this.state.incidentFoundDateTime}
               onChange={val => this.setState({incidentFoundDateTime: val})}
               {...dateTimeLocalizationProps}
+            />
+            <DatePicker 
+              label='Hvor lenge varte hendelsen?'
+              value={this.state.incidentToDate}
+              onSelectDate={val => this.setState({incidentToDate: val})}
+              {...dateLocalizationProps}
             />
             <TextField
               label='Hvem er de berørte?'
