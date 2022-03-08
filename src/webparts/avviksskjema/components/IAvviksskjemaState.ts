@@ -5,9 +5,9 @@ export interface IAvviksskjemaState {
   incidentLocation: string; // 200 characters
   incidentDescription: string; // 32768 characters
   suggestedActions: string; // 32768 characters
-
   personalInfoLost: boolean;
   categoryOther: string;
+  incidentAlertedOthers: string;
 
   // personopplysninger på avveie
   peopleInvolved: string; // 32768 characters
@@ -33,6 +33,7 @@ export const DefatultState: IAvviksskjemaState = {
   incidentLocation: '',
   incidentDescription: '',
   suggestedActions: '',
+  incidentAlertedOthers: '',
   peopleInvolved: '',
   incidentToDate: new Date(),
   incidentMainCause: '',

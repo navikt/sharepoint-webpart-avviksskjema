@@ -182,6 +182,12 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           onChange={(_, val) => this.setState({incidentLocation: val})}
           {...shortTextFieldProps}
         />
+        <TextField
+          label='Har du varslet for eksempel leder, verneombud, samarbeidspartnere eller andre offentlige instanser om denne hendelsen? Vennligst angi hvem/hvilke.'
+          value={this.state.incidentAlertedOthers}
+          onChange={(_, val) => this.setState({suggestedActions: val})}
+          {...longTextFieldProps}
+        />
         {this.state.category === strings.IncidentCategoryPrivacy && <>
           <Stack>
             <h3>Tilleggsspørsmål for hendelser knyttet til personvern</h3>
