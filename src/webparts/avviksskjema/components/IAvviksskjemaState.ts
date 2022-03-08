@@ -4,8 +4,6 @@ export interface IAvviksskjemaState {
   incidentDate?: Date;
   incidentLocation: string; // 200 characters
   incidentDescription: string; // 32768 characters
-  incidentConsecquences: string; // 32768 characters
-  incidentCause: string; // 32768 characters
   suggestedActions: string; // 32768 characters
 
   personalInfoLost: boolean;
@@ -14,7 +12,6 @@ export interface IAvviksskjemaState {
   // personopplysninger på avveie
   peopleInvolved: string; // 32768 characters
   incidentToDate?: Date;
-  incidentFoundDateTime?: Date;
   incidentMainCause: string; // choice
   relationsForPeopleInvolved: string; // choice
   relationsForPeopleInvolvedOther: string;
@@ -35,12 +32,9 @@ export const DefatultState: IAvviksskjemaState = {
   incidentDate: new Date(),
   incidentLocation: '',
   incidentDescription: '',
-  incidentConsecquences: '',
-  incidentCause: '',
   suggestedActions: '',
   peopleInvolved: '',
   incidentToDate: new Date(),
-  incidentFoundDateTime: new Date(),
   incidentMainCause: '',
   relationsForPeopleInvolved: '',
   relationsForPeopleInvolvedOther: '',

@@ -133,7 +133,7 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
     return (<form onSubmit={this.sendForm}>
       <Stack tokens={{ childrenGap: 20}}>
         <TextField 
-          label='Hva har skjedd? Beskriv hendelsen.'
+          label='Hva har skjedd? Beskriv hendelsen, hvorfor dette skjedde og hvilke konsekvenser hendelsen kan få eller har fått.'
           value={this.state.incidentDescription}
           onChange={(_, val) => this.setState({incidentDescription: val})}
           {...longTextFieldProps}
@@ -143,27 +143,11 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           validateOnFocusOut
         />
         <TextField
-          label='Hvilke konsekvenser hadde hendelsen?'
-          value={this.state.incidentConsecquences}
-          onChange={(_, val) => this.setState({incidentConsecquences: val})}
-          {...longTextFieldProps}
-        />
-        <TextField
-          label='Hva er årsaken til hendelsen?'
-          value={this.state.incidentCause}
-          onChange={(_, val) => this.setState({incidentCause: val})}
-          {...longTextFieldProps}
-        />
-        <TextField
           label='Har du forslag til tiltak for å unngå at noe slik skjer igjen?'
           value={this.state.suggestedActions}
           onChange={(_, val) => this.setState({suggestedActions: val})}
           {...longTextFieldProps}
         />
-        <Stack>
-          <h2>Tilleggsopplysninger</h2>
-          <p>For å kunne behandle din innsending på riktig måte, trenger vi noe mer informasjon. Hvis du er usikker på hva du skal skrive, kan du la være å fylle inn de feltene.</p>
-        </Stack>
         <Stack>
           <ChoiceGroup 
             label='Hva gjelder hendelsen?'
@@ -181,11 +165,15 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
             required={this.state.category === strings.IncidentCategoryOther}
           />
         </Stack>
-        <DatePicker 
-          label='Når skjedde/startet hendelsen?'
-          onSelectDate={val => this.setState({incidentDate: val})}
+        <Stack>
+          <h2>Tilleggsopplysninger</h2>
+          <p>For å kunne behandle din innsending på riktig måte, trenger vi noe mer informasjon. Er du usikker på hva du skal skrive, kan du la være å fylle inn de feltene.</p>
+        </Stack>
+        <DateTimePicker 
+          label='Når skjedde/startet hendelsen, eller når ble den oppdaget?'
           value={this.state.incidentDate}
-          {...dateLocalizationProps}
+          onChange={val => this.setState({incidentDate: val})}
+          {...dateTimeLocalizationProps}
         />
         <TextField 
           label='Hvor skjedde hendelsen?'
@@ -201,14 +189,8 @@ export default class Avviksskjema extends React.Component<IAvviksskjemaProps, IA
           </Stack>
           { this.state.personalInfoLost && <>
             <p>Når personopplysninger er på avveie, trenger vi ekstra informasjon som skal rapporteres til Datatilsynet. Fyll inn så godt du kan.</p>
-            <DateTimePicker 
-              label='Når ble hendelsen oppdaget?'
-              value={this.state.incidentFoundDateTime}
-              onChange={val => this.setState({incidentFoundDateTime: val})}
-              {...dateTimeLocalizationProps}
-            />
             <DatePicker 
-              label='Hvor lenge varte hendelsen?'
+              label='Hvor lenge varte hendelsen? (til hvilken dato)'
               value={this.state.incidentToDate}
               onSelectDate={val => this.setState({incidentToDate: val})}
               {...dateLocalizationProps}
